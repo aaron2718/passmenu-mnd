@@ -1,9 +1,11 @@
 #!/usr/bin/dash
 
-password_store="$HOME/.password-store"
-password_list=$(find "$password_store" -name '*.gpg' | sed "s/\.gpg$//" | sed "s|$password_store/||")
+dmenu="dmenu -l 5 -p password -nb "#000000" -nf "#ffffff" -sb "#0000ff" -sf "#ffffff""
 
-password=$(printf '%s' "$password_list" | dmenu "$@")
+password_store="$HOME/.password-store"
+password_list=$(find -L "$password_store" -name '*.gpg' | sed "s/\.gpg$//" | sed "s|$password_store/||")
+
+password=$(printf '%s' "$password_list" | $dmenu "$@")
 [ -n "$password" ] || exit
 
-pass show "$password" | head -n 1 | xclip -selection clipboard
+pass show "$password" | sed -n '1p' | xclip -selection clipboard
